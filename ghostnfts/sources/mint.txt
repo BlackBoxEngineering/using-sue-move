@@ -1,0 +1,14 @@
+    sui client ptb \
+    --assign to_address @0xe6825efc006f09c2e5bac217a84cdc3533c304369746ec5dccaf246eda15ee3e \
+    --move-call 0xb7e2405f9e4eb2b4f9915444fec620755c7f2f3bd9870b107e6ce1d9056f1d2b::portal::mint()
+    --gas-budget 100000000
+
+
+
+    sui client call --gas-budget 100000000
+    --function mint 
+    --module portal 
+    --package 0x9b6e80fdff90685591a059c0df1a7269d0c8ca38520dec01d6f83e88ab9bc37c 
+    --args 1 https://www.blackboxmint.com/BBE_Logo_purple_sm.png @0xe6825efc006f09c2e5bac217a84cdc3533c304369746ec5dccaf246eda15ee3e 
+    --gas-budget 100000000
+

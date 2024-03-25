@@ -1,0 +1,82 @@
+
+    #[test]
+    public fun test_spawn_ghost() {
+        let ctx = tx_context::dummy();
+        let dummy_address = @0xCAFE;
+        let ghost = Ghost {
+            id: object::new(&mut ctx),
+            speed: 1,
+            freakency: 1,
+            intelligence: 1,
+            tenebrous: 1,
+        };
+        assert!(ghost.speed+ghost.freakency+ghost.intelligence+ghost.tenebrous == 4, 1);
+        transfer::transfer(ghost, dummy_address);
+    }
+
+    #[test]
+    fun test_ghost_transactions() {
+        use sui::test_scenario;
+        let admin = @0xBABE;
+        let sender = @0xCAFE;
+        let receiver = @0xFACE;
+        let scenario_val = test_scenario::begin(admin);
+        let scenario = &mut scenario_val;
+        {
+            init(test_scenario::ctx(scenario));
+        };
+
+        test_scenario::next_tx(scenario, admin);
+        {
+            spawnGhost(1, 1, 1, 1, sender, test_scenario::ctx(scenario));
+        };
+
+        test_scenario::next_tx(scenario, sender);
+        {
+            let ghost = test_scenario::take_from_sender<Ghost>(scenario);
+            transferGhost(ghost, receiver, test_scenario::ctx(scenario))
+        };
+
+        test_scenario::next_tx(scenario, receiver);
+        {
+            let ghost = test_scenario::take_from_sender<Ghost>(scenario);
+            assert!(ghost.speed+ghost.freakency+ghost.intelligence+ghost.tenebrous == 4, 1);
+            test_scenario::return_to_sender(scenario, ghost)
+        };
+        test_scenario::end(scenario_val);
+    }
+
+    #[test_only] use sui::test_scenario as ts;
+    #[test_only] const ADMIN: address = @0xAD;
+    #[test]
+    public fun test_module_init() {
+        let ts = ts::begin(@0x0);
+        {
+            ts::next_tx(&mut ts, ADMIN);
+            init(ts::ctx(&mut ts));
+        };
+        {
+            ts::next_tx(&mut ts, ADMIN);
+            let portal: GhostSpawn = ts::take_from_sender(&ts);
+            assert!(spawnStats(&portal) == 0, 1);
+            ts::return_to_sender(&ts, portal);
+        };
+        ts::end(ts);
+    }
+
+    sui client ptb \
+    --assign spawner @0x580600527ba5746eddc57de8c94e319e8e8ee7cf666b208b684c03e5fe2eaf36 \
+    --assign to_address @0xe6825efc006f09c2e5bac217a84cdc3533c304369746ec5dccaf246eda15ee3e \
+    --move-call 0xc67a5069a65e566cf6e6c6b0014dfbdb4c152ef1166ded86d75df55ebf9386e6::portal::newGhost spawner 1 1 1 1 to_address\
+    --assign ghost \
+    --transfer-objects "[ghost]" to_address \
+    --gas-budget 100000000
+
+
+    sui client ptb \
+    --assign portal @0x580600527ba5746eddc57de8c94e319e8e8ee7cf666b208b684c03e5fe2eaf36 \
+    --assign to_address @0xe6825efc006f09c2e5bac217a84cdc3533c304369746ec5dccaf246eda15ee3e \
+    --move-call 0xc67a5069a65e566cf6e6c6b0014dfbdb4c152ef1166ded86d75df55ebf9386e6::portal::newGhost ghost 1 1 1 1 to_address\
+    --assign portal \
+    --transfer-objects "[portal]" to_address \
+    --gas-budget 100000000
