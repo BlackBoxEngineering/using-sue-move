@@ -4,7 +4,9 @@ module ghostnfts::portal {
     use std::string;
     use sui::object::{Self, UID};
     use sui::transfer;
+    use sui::pay;
     use sui::tx_context::{Self, TxContext};
+    use sui::Signer;
 
     const MAX_SUPPLY: u64 = 333;
     const ERROR_NO_SUPPLY: u64 = 1;
@@ -24,6 +26,10 @@ module ghostnfts::portal {
         intelligence: u64,
         tenebrous: u64,
         spawn: u64
+    }
+
+    public fun get_address(account: signer): address {
+        Signer::address_of(&account)
     }
 
     fun init(ctx: &mut TxContext) { 

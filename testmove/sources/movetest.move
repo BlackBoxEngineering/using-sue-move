@@ -3,6 +3,9 @@ module testmove::movetest {
     use sui::object::{Self, UID};
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
+    use sui::coin::{Self, Coin};
+    use sui::object::{Self, UID, ID};
+    use sui::balance::{Self, Balance};
 
     struct SomeNumbers has key, store {
         id: UID,
@@ -21,6 +24,17 @@ module testmove::movetest {
             no4: 0,
         };
         transfer::public_transfer(iniSomeNumbers, tx_context::sender(ctx));
+    }
+
+    public fun numberstoCoinObject(_acoin: &mut Coin<SUI>,ctx: &mut TxContext) :coin::Coin<SUI>{
+
+
+        let Somevalue: u64=10;
+        let CoinObj = _acoin;
+
+        coin::split(coin::Coin<SUI>, Somevalue, ctx)
+   
+
     }
 
     public fun returnNumbers(args: &SomeNumbers): (u64, u64, u64, u64) {
