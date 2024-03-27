@@ -51,12 +51,10 @@ module NamedAddr::BasicCoin {
 
     spec transfer {
         let addr_from = signer::address_of(from);
-
         let balance_from = global<Balance<CoinType>>(addr_from).coin.value;
         let balance_to = global<Balance<CoinType>>(to).coin.value;
         let post balance_from_post = global<Balance<CoinType>>(addr_from).coin.value;
         let post balance_to_post = global<Balance<CoinType>>(to).coin.value;
-
         ensures balance_from_post == balance_from - amount;
         ensures balance_to_post == balance_to + amount;
     }
@@ -71,10 +69,8 @@ module NamedAddr::BasicCoin {
 
     spec withdraw {
         let balance = global<Balance<CoinType>>(addr).coin.value;
-
         aborts_if !exists<Balance<CoinType>>(addr);
         aborts_if balance < amount;
-
         let post balance_post = global<Balance<CoinType>>(addr).coin.value;
         ensures result == Coin<CoinType> { value: amount };
         ensures balance_post == balance - amount;
@@ -90,10 +86,8 @@ module NamedAddr::BasicCoin {
     spec deposit {
         let balance = global<Balance<CoinType>>(addr).coin.value;
         let check_value = check.value;
-
         aborts_if !exists<Balance<CoinType>>(addr);
         aborts_if balance + check_value > MAX_U64;
-
         let post balance_post = global<Balance<CoinType>>(addr).coin.value;
         ensures balance_post == balance + check_value;
     }
