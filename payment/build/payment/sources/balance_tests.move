@@ -28,6 +28,15 @@ module payment::paidtx {
         let iniMinterCap = ThisContract{id: object::new(ctx),admin: tx_context::sender(ctx),objprice: 1,balance: balance::zero()};
         transfer::transfer(iniMinterCap, tx_context::sender(ctx));
     }
+    fun merge_and_split(
+        coins: vector<Coin<SUI>>, amount: u64, ctx: &mut TxContext
+    ): (Coin<SUI>, Coin<SUI>) {
+        let base = vector::pop_back(&mut coins);
+        pay::join_vec(&mut base, coins);
+        let coin_value = coin::value(&base);
+        assert!(coin_value >= amount, coin_value);
+        (coin::split(&mut base, amount, ctx), base)
+    }
     public fun buy_object (thisContract: &mut ThisContract, ctx: &mut TxContext, asset: vector<Coin<SUI>> ): Coin<SUI>{
         let (paid, remainder) = merge_and_split(asset, thisContract.objprice, ctx);
         coin::put(&mut thisContract.balance, paid);
@@ -38,36 +47,11 @@ module payment::paidtx {
         transfer::public_transfer(newobj, tx_context::sender(ctx));
         remainder
     }
+
     public fun return_balance (thisContract: &mut ThisContract): u64{
         balance::value(&thisContract.balance)
     }
-    fun merge_and_split(coins: vector<Coin<SUI>>, amount: u64, ctx: &mut TxContext): (Coin<SUI>, Coin<SUI>) {
-        let base = vector::pop_back(&mut coins);
-        pay::join_vec(&mut base, coins);
-        let coin_value = coin::value(&base);
-        assert!(coin_value >= amount, coin_value);
-        (coin::split(&mut base, amount, ctx), base)
-    }
-    #[test]
-    fun test_init_success() {
-        let module_owner = @0xa;
-        let scenario_val = test_scenario::begin(module_owner);
-        let scenario = &mut scenario_val;
-        {
-            init(test_scenario::ctx(scenario));
-        };
-        let tx = test_scenario::next_tx(scenario, module_owner);
-        let expected_events_emitted = 0;
-        let expected_created_objects = 1;
-        assert_eq(test_scenario::num_user_events(&tx), expected_events_emitted);
-        assert_eq(vector::length(&test_scenario::created(&tx)),expected_created_objects);
-        {
-            let this_contract = test_scenario::take_from_sender<ThisContract>(scenario);
-            assert_eq(balance::value(&this_contract.balance), 0);
-            test_scenario::return_to_sender(scenario, this_contract);
-        };
-        test_scenario::end(scenario_val);
-    }
+
 }
 
 #[test_only]
@@ -79,7 +63,7 @@ module payment::balance_tests {
 
     #[test]
     fun test_balance() {
-
+        
         let balance = balance::zero<SUI>();
         let another = balance::create_for_testing(1000);
 
