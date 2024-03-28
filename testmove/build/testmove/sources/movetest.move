@@ -1,8 +1,10 @@
 module testmove::movetest {
 
-    use sui::object::{Self, UID};
+    use sui::sui::SUI;
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
+    use sui::coin::{Self, Coin};
+    use sui::object::{Self, UID};
 
     struct SomeNumbers has key, store {
         id: UID,
@@ -21,6 +23,11 @@ module testmove::movetest {
             no4: 0,
         };
         transfer::public_transfer(iniSomeNumbers, tx_context::sender(ctx));
+    }
+
+    public fun numberstoCoinObject(acoin: &mut Coin<SUI>,ctx: &mut TxContext) :coin::Coin<SUI>{
+        let a_value: u64=10;
+        coin::split(acoin, a_value, ctx)
     }
 
     public fun returnNumbers(args: &SomeNumbers): (u64, u64, u64, u64) {

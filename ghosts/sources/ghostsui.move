@@ -1,4 +1,4 @@
-module nfts::ghostsui {
+module ghosts::ghostsui {
 
     use sui::url::{Self, Url};
     use std::string;
@@ -34,10 +34,10 @@ module nfts::ghostsui {
             name: string::utf8(name),
             description: string::utf8(description),
             url: url::new_unsafe_from_bytes(url),
-            speed: u64,
-            freakency: u64,
-            intelligence: u64,
-            tenebrous: u64
+            speed: 1,
+            freakency: 1,
+            intelligence: 1,
+            tenebrous: 1
         };
         let sender = tx_context::sender(ctx);
         event::emit(SpawnGhost {
@@ -73,7 +73,7 @@ module nfts::ghostsui {
     }
 
     public fun stats(nft: &Ghost): (u64, u64, u64, u64) {
-        (&nft.speed,&nft.freakency,&nft.intelligence,&nft.tenebrous)
+        (nft.speed,nft.freakency,nft.intelligence,nft.tenebrous)
     }
 
     public fun url(nft: &Ghost): &Url {
@@ -82,8 +82,8 @@ module nfts::ghostsui {
 }
 
 #[test_only]
-module nfts::GhostTests {
-    use nfts::ghostsui::{Self, Ghost};
+module ghosts::ghosttests {
+    use ghosts::ghostsui::{Self, Ghost};
     use sui::test_scenario as ts;
     use sui::transfer;
     use std::string;

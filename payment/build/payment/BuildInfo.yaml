@@ -5,14 +5,14 @@ compiled_package_info:
     payment: "0000000000000000000000000000000000000000000000000000000000000000"
     std: "0000000000000000000000000000000000000000000000000000000000000001"
     sui: "0000000000000000000000000000000000000000000000000000000000000002"
-  source_digest: 7B50545E7912DCABA3530098A4206204E14E5BC9E32E61A3D9243BE2A1327E04
+  source_digest: 05403CB555F394A637E3109BB389B2C1052E459356112762B242D2922BEF5821
   build_flags:
-    dev_mode: true
-    test_mode: true
+    dev_mode: false
+    test_mode: false
     generate_docs: false
     install_dir: ~
     force_recompilation: false
-    lock_file: ~
+    lock_file: "./Move.lock"
     fetch_deps_only: false
     skip_fetch_latest_git_deps: false
     default_flavor: sui
