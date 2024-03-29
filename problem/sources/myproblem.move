@@ -34,7 +34,10 @@ module problem::myproblem {
         let new_item = Item {id: object::new(ctx)};
         transfer::transfer(new_item,the_buyer);
 
-        return coin::take(coin_balance, (coin_value-the_shop.item_price),ctx)
+        let return_coin: Coin<SUI> = coin::take(coin_balance, (coin_value-the_shop.item_price),ctx);
+        transfer::transfer(return_coin, tx_context::sender(ctx));
+
+        return return_coin
     }
 
    #[test_only]

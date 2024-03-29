@@ -1,5 +1,6 @@
 module problem::myproblem {
 
+    use std::vector;
     use sui::sui::SUI;
     use sui::transfer;
     use sui::coin::{Self, Coin};
@@ -22,7 +23,7 @@ module problem::myproblem {
         transfer::transfer(shop_start, tx_context::sender(ctx));
     }
 
-    public fun sell_item (the_buyer: address, the_coin: &mut Coin<SUI>,the_shop: &mut Shop,ctx: &mut TxContext,) : Coin<SUI> {
+    public fun sell_item (the_buyer: address, the_coin: &mut Coin<SUI>,the_shop: &mut Shop,ctx: &mut TxContext,)  {
         
         let coin_value = coin::value(the_coin);
         assert!(coin_value >= the_shop.item_price, 99);
@@ -33,7 +34,10 @@ module problem::myproblem {
         let new_item = Item {id: object::new(ctx)};
         transfer::transfer(new_item,the_buyer);
 
-        return coin::take(coin_balance, (coin_value-the_shop.item_price),ctx)
+        let return_coin: Coin<SUI> = coin::take(coin_balance, (coin_value-the_shop.item_price),ctx);
+        transfer::public_transfer(return_coin, tx_context::sender(ctx));
+
+        // return return_coin
     }
 
    #[test_only]
