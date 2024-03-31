@@ -27,17 +27,18 @@ module problem::myproblem {
         
         let coin_value = coin::value(the_coin);
         assert!(coin_value >= the_shop.item_price, 99);
-
         let coin_balance = coin::balance_mut(the_coin);
-        balance::join(&mut the_shop.balance, balance::split(coin_balance, the_shop.item_price));
-
+        let balance_to_pay = balance::split(coin_balance, the_shop.item_price);
+        balance::join(&mut the_shop.balance, balance_to_pay);
         let new_item = Item {id: object::new(ctx)};
-        transfer::transfer(new_item,the_buyer);
-
-        let return_coin: Coin<SUI> = coin::take(coin_balance, (coin_value-the_shop.item_price),ctx);
-        transfer::transfer(return_coin, tx_context::sender(ctx));
-
+        transfer::public_transfer(new_item,the_buyer);
+        let return_coin: Coin<SUI> = coin::take<SUI>(coin_balance, coin_value,ctx);
         return return_coin
+
+        // return coin is type 'Coin<SUI>' SUI has a drop, but Coin does not.
+        // normally a recipt or a dropable object is returned in this case.
+        // there is no need to return the change that is already in hand
+        // ... 
     }
 
    #[test_only]
